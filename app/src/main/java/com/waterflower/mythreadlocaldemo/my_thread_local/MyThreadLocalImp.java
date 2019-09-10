@@ -175,15 +175,30 @@ public class MyThreadLocalImp<T> implements IMyThreadLocal<T> {
         public void remove(IMyThreadLocal key) {
             MyWeakReferenceEntry[] tab = table;
             int length = tab.length;
-            for (int i = 0; i < length; i++) {
-                MyWeakReferenceEntry e = tab[i];
-                if (e!=null&&e.get() == key) {
-                    e.clear();
 
+
+            int i = key.hashCode() & (length-1);
+            for (MyWeakReferenceEntry e = tab[i];
+                 e != null;
+                 e = tab[i = getNextIndex(i, length)]) {
+                if (e.get() == key) {
+                    e.clear();
                     //Do somethings else.
+//                    expungeStaleEntry(i);
                     return;
                 }
             }
+
+
+//            for (int i = 0; i < length; i++) {
+//                MyWeakReferenceEntry e = tab[i];
+//                if (e!=null&&e.get() == key) {
+//                    e.clear();
+//
+//                    //Do somethings else.
+//                    return;
+//                }
+//            }
         }
 
 
