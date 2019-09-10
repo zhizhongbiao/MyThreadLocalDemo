@@ -94,11 +94,12 @@ public class MyThreadLocalImp<T> implements IMyThreadLocal<T> {
             int i = firstKey.hashCode() & (INITIAL_CAPACITY - 1);
             table[i] = new MyWeakReferenceEntry(firstKey, firstValue);
             size = 1;
-            setThreshold(INITIAL_CAPACITY);
+            setThreshold(table.length);
         }
 
-        private void setThreshold(int thresholdCapacity) {
-            threshold = thresholdCapacity;
+        private void setThreshold(int length) {
+            threshold = length * 2 / 3;
+            ;
         }
 
 
@@ -167,11 +168,22 @@ public class MyThreadLocalImp<T> implements IMyThreadLocal<T> {
         }
 
         private int getNextIndex(int i, int len) {
-            return 0;
+            ++i;
+            return i < len ? i : 0;
         }
 
         public void remove(IMyThreadLocal key) {
+            MyWeakReferenceEntry[] tab = table;
+            int length = tab.length;
+            for (int i = 0; i < length; i++) {
+                MyWeakReferenceEntry e = tab[i];
+                if (e!=null&&e.get() == key) {
+                    e.clear();
 
+                    //Do somethings else.
+                    return;
+                }
+            }
         }
 
 
